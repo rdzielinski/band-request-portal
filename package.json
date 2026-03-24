@@ -1,0 +1,13 @@
+{
+  "name": "band-request-portal",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npx wrangler pages dev ./public --d1 DB=daf7c8fc-612a-4fc6-8e56-63667c92ccb1",
+    "deploy": "npx wrangler pages deploy ./public --project-name band-request-portal",
+    "setup": "node scripts/setup-password.js"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}

@@ -1,0 +1,12 @@
+name = "band-request-portal"
+compatibility_date = "2024-12-01"
+pages_build_output_dir = "./public"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "band-request-portal"
+database_id = "daf7c8fc-612a-4fc6-8e56-63667c92ccb1"
+
+[vars]
+DIRECTOR_EMAIL = "dzielinskir@waterloo.k12.wi.us"
+# Set RESEND_API_KEY as a secret via: npx wrangler pages secret put RESEND_API_KEY

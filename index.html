@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Waterloo Band — Request Portal</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  /* Waterloo Warriors — Maroon & Gold */
+  --bg-primary: #faf8f5;
+  --bg-card: #ffffff;
+  --bg-header: #6B1A2A;       /* Waterloo maroon */
+  --bg-tab: #541521;           /* deeper maroon for tab bar */
+  --bg-tab-active: #8B2234;    /* mid maroon for active tab */
+  --text-primary: #1c1208;
+  --text-secondary: #6b5a4e;
+  --text-on-dark: #ffffff;
+  --accent: #8B2234;           /* maroon */
+  --accent-light: #A83348;     /* lighter maroon */
+  --accent-pale: #f5e0e3;      /* very pale maroon tint */
+  --gold: #C9922A;             /* Waterloo gold */
+  --gold-light: #E0AE50;
+  --gold-pale: #fdf3dc;        /* pale gold tint */
+  --success: #2e7d4f;
+  --success-pale: #d6ede2;
+  --warning: #C9922A;          /* use gold as warning */
+  --warning-pale: #fdf3dc;
+  --danger: #b91c1c;
+  --danger-pale: #fee2e2;
+  --info: #1d6fa4;
+  --info-pale: #dbeafe;
+  --purple: #C9922A;           /* repurpose purple slot as gold for materials */
+  --purple-pale: #fdf3dc;
+  --border: #e5d9cc;
+  --border-light: #f0e8e0;
+  --gap: 16px;
+  --radius: 8px;
+  --shadow: 0 1px 3px rgba(107,26,42,0.08);
+  --shadow-md: 0 4px 12px rgba(107,26,42,0.13);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+.header {
+  background: var(--bg-header);
+  color: var(--text-on-dark);
+  padding: 16px 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.header-brand { display: flex; align-items: center; gap: 12px; }
+.header-logo {
+  width: 36px; height: 36px;
+  background: var(--gold);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.header h1 { font-size: 18px; font-weight: 600; }
+.header-sub { font-size: 12px; opacity: 0.65; margin-top: 1px; }
+
+/* ── NAV TABS ── */
+.nav-tabs {
+  background: var(--bg-tab);
+  display: flex;
+  border-bottom: 2px solid rgba(255,255,255,0.08);
+}
+.nav-tab {
+  padding: 13px 22px;
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.65);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  white-space: nowrap;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+}
+.nav-tab:hover { background: rgba(255,255,255,0.05); color: var(--text-on-dark); }
+.nav-tab.active { background: var(--bg-tab-active); color: var(--text-on-dark); border-bottom-color: var(--gold); }
+
+/* ── MAIN CONTENT ── */
+.main-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px var(--gap);
+}
+.tab-content { display: none; }
+.tab-content.active { display: block; animation: fadeIn 0.25s; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+/* ── CARDS ── */
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  margin-bottom: var(--gap);
+  border: 1px solid var(--border-light);
+}
+.card-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--text-primary);
+}
+.card-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+/* ── WAIT BANNER ── */
+.wait-banner {
+  background: var(--gold-pale);
+  border: 1px solid var(--gold);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.wait-badge {
+  background: var(--gold);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.wait-text { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+.wait-text strong { color: var(--text-primary); }
+
+/* ── FORM ── */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group.full { grid-column: 1/-1; }
+.form-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.form-control {
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: #fff;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  outline: none;
+  -webkit-appearance: none;
+}
+.form-control:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(76,114,176,0.15); }
+textarea.form-control { resize: vertical; min-height: 90px; }
+
+/* ── REQUEST TYPE PICKER ── */
+.type-picker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.type-card {
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: #fff;
+  text-align: left;
+}
+.type-card:hover { border-color: var(--accent-light); }
+.type-card.selected { border-color: var(--accent); background: var(--accent-pale); }
+.type-card#type-materials.selected { border-color: var(--gold); background: var(--gold-pale); }
+.type-card-icon { font-size: 1.5rem; margin-bottom: 6px; display: block; }
+.type-card-title { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+.type-card-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.4; }
+
+/* ── SEVERITY / PRIORITY ── */
+.seg-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.seg-btn {
+  padding: 8px 10px;
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
+  color: var(--text-secondary);
+  text-align: center;
+  transition: all 0.13s;
+  line-height: 1.4;
+}
+.seg-btn:hover { border-color: var(--accent-light); color: var(--text-primary); }
+.seg-btn.sel-minor { border-color: var(--success); background: var(--success-pale); color: #155724; }
+.seg-btn.sel-moderate { border-color: var(--gold); background: var(--gold-pale); color: #7a5600; }
+.seg-btn.sel-major { border-color: var(--danger); background: var(--danger-pale); color: #721c24; }
+.seg-btn.sel-low { border-color: var(--success); background: var(--success-pale); color: #155724; }
+.seg-btn.sel-medium { border-color: var(--gold); background: var(--gold-pale); color: #7a5600; }
+.seg-btn.sel-urgent { border-color: var(--danger); background: var(--danger-pale); color: #721c24; }
+
+/* ── SUBMIT BUTTON ── */
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent-light); }
+.btn-primary:active { transform: translateY(1px); }
+.btn-outline { background: #fff; color: var(--text-secondary); border: 1px solid var(--border); }
+.btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+.btn-block { width: 100%; margin-top: 8px; padding: 12px; font-size: 15px; }
+
+/* ── SUCCESS ── */
+.success-card {
+  display: none;
+  text-align: center;
+  padding: 40px 24px;
+}
+.success-card.visible { display: block; }
+.success-icon {
+  width: 60px; height: 60px;
+  background: var(--success-pale);
+  border: 2px solid var(--success);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+  margin: 0 auto 16px;
+  animation: pop 0.35s cubic-bezier(.17,.67,.34,1.4);
+}
+@keyframes pop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.success-card h3 { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+.ticket-num {
+  display: inline-block;
+  font-family: monospace;
+  font-size: 14px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 6px 16px;
+  margin: 10px 0 14px;
+  color: var(--accent);
+  font-weight: 700;
+}
+.success-details { font-size: 13px; color: var(--text-secondary); max-width: 400px; margin: 0 auto 20px; line-height: 1.6; }
+
+/* ── DASHBOARD STATS ── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--gap);
+  margin-bottom: var(--gap);
+}
+.kpi-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  box-shadow: var(--shadow);
+  border-left: 4px solid var(--accent);
+  border: 1px solid var(--border-light);
+  border-left: 4px solid var(--accent);
+}
+.kpi-card.kpi-open { border-left-color: var(--gold); }
+.kpi-card.kpi-wip { border-left-color: var(--accent); }
+.kpi-card.kpi-done { border-left-color: var(--success); }
+.kpi-card.kpi-sent { border-left-color: var(--text-secondary); }
+.kpi-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; font-weight: 600; }
+.kpi-value { font-size: 28px; font-weight: 700; color: var(--text-primary); }
+.kpi-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+/* ── FILTER ROW ── */
+.filter-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.filter-label { font-size: 12px; color: var(--text-secondary); font-weight: 500; margin-right: 4px; }
+.filter-btn {
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.13s;
+}
+.filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+.filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* ── TICKET CARDS ── */
+.ticket-list { display: flex; flex-direction: column; gap: 10px; }
+
+.ticket-row {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  border-left: 4px solid var(--border);
+  padding: 16px 18px;
+  cursor: pointer;
+  transition: all 0.15s;
+  box-shadow: var(--shadow);
+}
+.ticket-row:hover { box-shadow: var(--shadow-md); border-color: var(--border); }
+.ticket-row.s-open { border-left-color: var(--gold); }
+.ticket-row.s-in-progress { border-left-color: var(--accent); }
+.ticket-row.s-done { border-left-color: var(--success); opacity: 0.8; }
+.ticket-row.s-sent-out { border-left-color: var(--text-secondary); }
+
+.tr-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
+.tr-name { font-weight: 600; font-size: 14px; }
+.tr-meta { display: flex; gap: 5px; flex-wrap: wrap; align-items: center; }
+.tr-instrument { font-size: 13px; color: var(--gold); font-weight: 500; margin-bottom: 3px; }
+.tr-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.4; }
+.tr-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+.tr-date { font-size: 11px; color: var(--text-secondary); font-family: monospace; }
+.tr-location { font-size: 11px; color: var(--text-secondary); }
+
+/* ── BADGES ── */
+.badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.badge-open { background: var(--gold-pale); color: #7a5600; }
+.badge-in-progress { background: var(--accent-pale); color: #5a1220; }
+.badge-done { background: var(--success-pale); color: #155724; }
+.badge-sent-out { background: #ede8e3; color: #5a4a3a; }
+.badge-minor { background: var(--success-pale); color: #155724; }
+.badge-moderate { background: var(--gold-pale); color: #7a5600; }
+.badge-major { background: var(--danger-pale); color: #721c24; }
+.badge-low { background: var(--success-pale); color: #155724; }
+.badge-medium { background: var(--gold-pale); color: #7a5600; }
+.badge-urgent { background: var(--danger-pale); color: #721c24; }
+.badge-repair { background: var(--accent-pale); color: #5a1220; }
+.badge-materials { background: var(--gold-pale); color: #7a5600; }
+.badge-id { background: #ede8e3; color: #5a4a3a; font-family: monospace; }
+
+/* ── MODAL ── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 580px;
+  max-height: 92vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  animation: slideUp 0.2s ease;
+}
+@keyframes slideUp { from { transform: translateY(16px); opacity: 0; } to { transform: none; opacity: 1; } }
+.modal-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-header);
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.modal-header h3 { font-size: 15px; font-weight: 600; color: #fff; }
+.modal-close { background: none; border: none; color: rgba(255,255,255,0.65); font-size: 18px; cursor: pointer; padding: 2px 6px; border-radius: 4px; transition: color 0.13s; }
+.modal-close:hover { color: #fff; }
+.modal-body { padding: 20px 24px; }
+
+.modal-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.mig-item label { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.4px; display: block; margin-bottom: 3px; }
+.mig-item span { font-size: 13px; color: var(--text-primary); }
+
+.modal-desc {
+  background: var(--bg-primary);
+  border-radius: 6px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 18px;
+  border: 1px solid var(--border-light);
+}
+
+.section-header {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.status-opt {
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  text-align: center;
+  padding: 9px 6px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
+  color: var(--text-secondary);
+  transition: all 0.13s;
+  line-height: 1.4;
+}
+.status-opt .s-icon { display: block; font-size: 1.1rem; margin-bottom: 3px; }
+.status-opt:hover { border-color: var(--accent-light); color: var(--text-primary); }
+.status-opt.sel-open { border-color: var(--gold); background: var(--gold-pale); color: #7a5600; }
+.status-opt.sel-in-progress { border-color: var(--accent); background: var(--accent-pale); color: #5a1220; }
+.status-opt.sel-done { border-color: var(--success); background: var(--success-pale); color: #155724; }
+.status-opt.sel-sent-out { border-color: var(--text-secondary); background: #ede8e3; color: #5a4a3a; }
+
+.location-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.loc-btn {
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  text-align: center;
+  padding: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
+  color: var(--text-secondary);
+  transition: all 0.13s;
+}
+.loc-btn:hover { border-color: var(--accent-light); }
+.loc-btn.selected { border-color: var(--accent); background: var(--accent-pale); color: var(--accent); }
+
+.quick-replies {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.qr { padding: 4px 10px; border: 1px solid var(--border); border-radius: 12px; font-size: 12px; color: var(--text-secondary); cursor: pointer; background: #fff; font-family: inherit; transition: all 0.12s; }
+.qr:hover { border-color: var(--accent); color: var(--accent); }
+
+.reply-history { margin-bottom: 16px; display: flex; flex-direction: column; gap: 8px; }
+.reply-item { background: #f0f7f0; border: 1px solid #c3e6cb; border-radius: 6px; padding: 10px 14px; font-size: 13px; color: var(--text-primary); line-height: 1.5; }
+.reply-meta { font-size: 11px; color: var(--text-secondary); margin-top: 4px; font-family: monospace; }
+
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; padding-top: 12px; border-top: 1px solid var(--border-light); margin-top: 12px; }
+
+/* ── DYNAMIC FIELDS ── */
+.field-section { display: none; }
+.field-section.visible { display: block; }
+
+.materials-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.mat-chip {
+  padding: 6px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  background: #fff;
+  color: var(--text-secondary);
+  transition: all 0.13s;
+}
+.mat-chip:hover { border-color: var(--gold); color: #7a5600; }
+.mat-chip.selected { border-color: var(--gold); background: var(--gold-pale); color: #7a5600; }
+
+/* ── SECTION DIVIDER ── */
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.section-divider::before, .section-divider::after { content:''; flex: 1; height: 1px; background: var(--border); }
+
+.empty { text-align: center; padding: 48px 16px; color: var(--text-secondary); }
+.empty-icon { font-size: 2.5rem; display: block; margin-bottom: 10px; opacity: 0.4; }
+.empty p { font-size: 13px; }
+
+@media (max-width: 640px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .type-picker { grid-template-columns: 1fr; }
+  .status-grid { grid-template-columns: repeat(2, 1fr); }
+  .modal-info-grid { grid-template-columns: 1fr; }
+  .seg-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-content">
+    <div class="header-brand">
+      <div class="header-logo">🎶</div>
+      <div>
+        <h1>Waterloo Band Program</h1>
+        <div class="header-sub">Student & Parent Request Portal · Room 157</div>
+      </div>
+    </div>
+    <div style="font-size:12px;opacity:0.6" id="header-date"></div>
+  </div>
+</div>
+
+<!-- NAV TABS -->
+<div class="nav-tabs">
+  <button class="nav-tab active" onclick="switchTab('submit', this)">Submit a Request</button>
+  <button class="nav-tab" onclick="switchTab('director', this)">🔐 Director Dashboard</button>
+</div>
+
+<!-- MAIN -->
+<div class="main-content">
+
+  <!-- ═══ SUBMIT TAB ═══ -->
+  <div class="tab-content active" id="tab-submit">
+
+    <!-- Wait banner -->
+    <div class="wait-banner" id="wait-banner">
+      <div class="wait-badge" id="wait-est">~1–2 days</div>
+      <div class="wait-text">
+        <strong id="queue-count">0 open requests</strong> currently in queue<br>
+        <span id="wait-note">Estimated repair or fulfillment time based on current workload.</span>
+      </div>
+    </div>
+
+    <!-- Success -->
+    <div class="card" id="success-card" style="display:none">
+      <div class="success-card visible">
+        <div class="success-icon">✓</div>
+        <h3>Request Submitted!</h3>
+        <div class="ticket-num" id="confirm-id">#WB-0001</div>
+        <p class="success-details" id="confirm-msg">Your request has been logged. Mr. Dzielinski will review it and follow up when it's ready.</p>
+        <button class="btn btn-primary" onclick="resetForm()">Submit Another Request</button>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <div class="card" id="main-form">
+      <div class="card-title">New Request</div>
+      <p class="card-subtitle">Students and parents can use this form to request instrument repairs or program materials. Mr. D will follow up when your request is complete.</p>
+
+      <!-- Type picker -->
+      <div class="form-group full" style="margin-bottom:0">
+        <div class="form-label" style="margin-bottom:8px">What type of request is this?</div>
+        <div class="type-picker">
+          <div class="type-card selected" id="type-repair" onclick="setType('repair')">
+            <span class="type-card-icon">🔧</span>
+            <div class="type-card-title">Instrument Repair</div>
+            <div class="type-card-desc">Something is broken, stuck, leaking air, or not playing right.</div>
+          </div>
+          <div class="type-card" id="type-materials" onclick="setType('materials')">
+            <span class="type-card-icon">📦</span>
+            <div class="type-card-title">Materials Request</div>
+            <div class="type-card-desc">Reeds, valve oil, cleaning kit, sheet music, or other supplies.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-divider">Your Info</div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <div class="form-label">Student's Name *</div>
+          <input class="form-control" id="f-name" placeholder="First Last">
+        </div>
+        <div class="form-group">
+          <div class="form-label">Submitting As *</div>
+          <select class="form-control" id="f-submitter">
+            <option value="">Select…</option>
+            <option value="student">Student (myself)</option>
+            <option value="parent">Parent / Guardian</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <div class="form-label">Grade *</div>
+          <select class="form-control" id="f-grade">
+            <option value="">Select grade…</option>
+            <option>5th</option><option>6th</option><option>7th</option>
+            <option>8th</option><option>9th</option><option>10th</option>
+            <option>11th</option><option>12th</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <div class="form-label">Contact Email (optional)</div>
+          <input class="form-control" id="f-email" type="email" placeholder="For reply notifications">
+        </div>
+      </div>
+
+      <!-- ── REPAIR FIELDS ── -->
+      <div class="field-section visible" id="repair-fields">
+        <div class="section-divider">Instrument Info</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <div class="form-label">Instrument *</div>
+            <select class="form-control" id="f-instrument">
+              <option value="">Select instrument…</option>
+              <optgroup label="Woodwinds">
+                <option>Flute</option><option>Clarinet</option><option>Bass Clarinet</option>
+                <option>Alto Saxophone</option><option>Tenor Saxophone</option><option>Bari Saxophone</option>
+                <option>Oboe</option><option>Bassoon</option>
+              </optgroup>
+              <optgroup label="Brass">
+                <option>Trumpet</option><option>French Horn</option><option>Trombone</option>
+                <option>Euphonium / Baritone</option><option>Tuba / Sousaphone</option>
+              </optgroup>
+              <optgroup label="Percussion">
+                <option>Snare Drum</option><option>Bass Drum</option><option>Bells / Marimba / Xylophone</option>
+                <option>Timpani</option><option>Drumset</option><option>Auxiliary Percussion</option>
+              </optgroup>
+              <optgroup label="Other">
+                <option>String Bass</option><option>Piano / Keyboard</option><option>Other</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="form-group">
+            <div class="form-label">Ownership</div>
+            <select class="form-control" id="f-ownership">
+              <option value="">Select…</option>
+              <option value="school">School-owned (District)</option>
+              <option value="personal">My own instrument</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <div class="form-label">Locker / Where is it?</div>
+            <input class="form-control" id="f-locker" placeholder="e.g., Locker #14, cubby, takes home">
+          </div>
+          <div class="form-group">
+            <div class="form-label">Severity *</div>
+            <div class="seg-row" style="margin-top:4px">
+              <button class="seg-btn" onclick="setSeverity('minor',this,'repair')">🟢 Minor<br><small>Still plays</small></button>
+              <button class="seg-btn" onclick="setSeverity('moderate',this,'repair')">🟡 Moderate<br><small>Hard to play</small></button>
+              <button class="seg-btn" onclick="setSeverity('major',this,'repair')">🔴 Major<br><small>Can't play</small></button>
+            </div>
+          </div>
+          <div class="form-group full">
+            <div class="form-label">Describe the Problem *</div>
+            <textarea class="form-control" id="f-desc" placeholder="Be specific — e.g., 'The 2nd valve sticks and won't spring back up' or 'The E♭ key pad is leaking air and it squeaks on every note'"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── MATERIALS FIELDS ── -->
+      <div class="field-section" id="materials-fields">
+        <div class="section-divider">What Do You Need?</div>
+        <div class="form-group full" style="margin-bottom:14px">
+          <div class="form-label" style="margin-bottom:8px">Common Items (select all that apply)</div>
+          <div class="materials-chips">
+            <button class="mat-chip" onclick="toggleChip(this)">Reeds (Clarinet)</button>
+            <button class="mat-chip" onclick="toggleChip(this)">Reeds (Alto Sax)</button>
+            <button class="mat-chip" onclick="toggleChip(this)">Reeds (Tenor Sax)</button>
+            <button class="mat-chip" onclick="toggleChip(this)">Reeds (Bari Sax)</button>
+            <button class="mat-chip" onclick="toggleChip(this)">Valve Oil</button>
+            <button class="mat-chip" onclick="toggleChip(this)">Slide Grease / Oil</button>
+            <button class="mat-chip" onclick="toggleChip(this)">Rotor Oil</button>
+            <button class="mat-chip" onclick="toggleChip(this)">Cleaning Swab</button>
+            <button class="mat-chip" onclick="toggleChip(this)">Cleaning Kit</button>
+            <button class="mat-chip" onclick="toggleChip(this)">Replacement Music</button>
+            <button class="mat-chip" onclick="toggleChip(this)">Mouthpiece</button>
+            <button class="mat-chip" onclick="toggleChip(this)">Mouthpiece Cap / Ligature</button>
+            <button class="mat-chip" onclick="toggleChip(this)">Drum Sticks / Mallets</button>
+            <button class="mat-chip" onclick="toggleChip(this)">Lyres / Flip Folder</button>
+            <button class="mat-chip" onclick="toggleChip(this)">Method Book</button>
+          </div>
+        </div>
+        <div class="form-group full">
+          <div class="form-label">Additional Details / Other Items Needed</div>
+          <textarea class="form-control" id="f-mat-desc" placeholder="Describe anything not listed above, or add specifics (e.g., 'size 2.5 reeds', 'lost my concert music for measures 1–32')"></textarea>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <div class="form-label">Priority</div>
+            <div class="seg-row" style="margin-top:4px">
+              <button class="seg-btn" onclick="setSeverity('low',this,'materials')">🟢 Low<br><small>Not urgent</small></button>
+              <button class="seg-btn" onclick="setSeverity('medium',this,'materials')">🟡 Medium<br><small>Needs it soon</small></button>
+              <button class="seg-btn" onclick="setSeverity('urgent',this,'materials')">🔴 Urgent<br><small>Concert/lesson</small></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-block" onclick="submitRequest()">Submit Request →</button>
+    </div>
+  </div>
+
+  <!-- ═══ DIRECTOR TAB ═══ -->
+  <div class="tab-content" id="tab-director">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+      <div>
+        <div style="font-size:18px;font-weight:600">Request Queue</div>
+        <div style="font-size:12px;color:var(--text-secondary)" id="dash-date"></div>
+      </div>
+    </div>
+
+    <div class="kpi-grid" id="kpi-grid">
+      <div class="kpi-card kpi-open"><div class="kpi-label">Open</div><div class="kpi-value" id="k-open">0</div><div class="kpi-sub">Awaiting action</div></div>
+      <div class="kpi-card kpi-wip"><div class="kpi-label">In Progress</div><div class="kpi-value" id="k-wip">0</div><div class="kpi-sub">Being worked on</div></div>
+      <div class="kpi-card kpi-done"><div class="kpi-label">Done</div><div class="kpi-value" id="k-done">0</div><div class="kpi-sub">Completed</div></div>
+      <div class="kpi-card kpi-sent"><div class="kpi-label">Sent Out</div><div class="kpi-value" id="k-sent">0</div><div class="kpi-sub">At repair shop</div></div>
+    </div>
+
+    <div class="filter-row">
+      <span class="filter-label">Filter:</span>
+      <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+      <button class="filter-btn" onclick="setFilter('open',this)">Open</button>
+      <button class="filter-btn" onclick="setFilter('in-progress',this)">In Progress</button>
+      <button class="filter-btn" onclick="setFilter('done',this)">Done</button>
+      <button class="filter-btn" onclick="setFilter('sent-out',this)">Sent Out</button>
+      <span style="width:12px"></span>
+      <span class="filter-label">Type:</span>
+      <button class="filter-btn active" onclick="setTypeFilter('all',this)" id="tf-all">All</button>
+      <button class="filter-btn" onclick="setTypeFilter('repair',this)" id="tf-repair">🔧 Repairs</button>
+      <button class="filter-btn" onclick="setTypeFilter('materials',this)" id="tf-materials">📦 Materials</button>
+    </div>
+
+    <div class="ticket-list" id="ticket-list"></div>
+  </div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="maybeClose(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">Request Details</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-info-grid" id="modal-info"></div>
+      <div class="modal-desc" id="modal-desc"></div>
+
+      <div class="section-header">Update Status</div>
+      <div class="status-grid" id="modal-status-grid"></div>
+
+      <div id="loc-section" style="display:none">
+        <div class="section-header">Pickup Location (shown on reply)</div>
+        <div class="location-grid">
+          <button class="loc-btn" onclick="setLoc('locker')">📪 Back in locker</button>
+          <button class="loc-btn" onclick="setLoc('repair-zone')">🔧 Repair / Repaired Zone</button>
+        </div>
+      </div>
+
+      <div id="reply-hist-wrap"></div>
+
+      <div class="section-header">Reply to Student / Parent</div>
+      <div class="quick-replies" id="quick-replies"></div>
+      <textarea class="form-control" id="reply-text" style="width:100%;min-height:80px;margin-bottom:12px" placeholder="Type a message…"></textarea>
+
+      <div class="modal-actions">
+        <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveTicket()">Save & Log Reply</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+let tickets = JSON.parse(localStorage.getItem('wbRequests2') || '[]');
+let requestType = 'repair';
+let severity = '';
+let materialsSeverity = '';
+let activeLoc = '';
+let activeFilter = 'all';
+let activeTypeFilter = 'all';
+let editId = null;
+let modalStatus = '';
+let selectedChips = [];
+
+function save() { localStorage.setItem('wbRequests2', JSON.stringify(tickets)); }
+
+function genId() {
+  const n = (tickets.length + 1).toString().padStart(4,'0');
+  return `WB-${n}`;
+}
+function ts() {
+  return new Date().toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+}
+
+// ── DATE ──
+const dstr = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+document.getElementById('header-date').textContent = dstr;
+document.getElementById('dash-date') && (document.getElementById('dash-date').textContent = dstr);
+
+// ── TABS ──
+function switchTab(id, el) {
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  el.classList.add('active');
+  if (id==='director') renderDash();
+}
+
+// ── WAIT BANNER ──
+function updateWait() {
+  const open = tickets.filter(t=>t.status==='open'||t.status==='in-progress').length;
+  const sev = requestType === 'repair' ? severity : materialsSeverity;
+  let adj = open;
+  if (sev==='major'||sev==='urgent') adj+=2;
+  else if (sev==='moderate'||sev==='medium') adj+=1;
+  let est, note;
+  if (adj===0) { est='Same day'; note="You're first in line!"; }
+  else if (adj<=2) { est='1–2 days'; note='A couple requests ahead of you.'; }
+  else if (adj<=5) { est='3–5 days'; note='Moderate queue — hang tight.'; }
+  else if (adj<=9) { est='~1 week'; note='Busy queue right now.'; }
+  else { est='1–2 weeks'; note='High demand — complex repairs may go to the shop.'; }
+  document.getElementById('wait-est').textContent = est;
+  document.getElementById('queue-count').textContent = `${open} open request${open!==1?'s':''}`;
+  document.getElementById('wait-note').textContent = note;
+}
+updateWait();
+
+// ── TYPE PICKER ──
+function setType(t) {
+  requestType = t;
+  document.getElementById('type-repair').classList.toggle('selected', t==='repair');
+  document.getElementById('type-materials').classList.toggle('selected', t==='materials');
+  document.getElementById('repair-fields').classList.toggle('visible', t==='repair');
+  document.getElementById('materials-fields').classList.toggle('visible', t==='materials');
+  updateWait();
+}
+
+// ── SEVERITY ──
+function setSeverity(val, btn, type) {
+  const group = type==='repair' ? '.repair-fields .seg-btn, #repair-fields .seg-btn' : '#materials-fields .seg-btn';
+  document.querySelectorAll('#' + (type==='repair'?'repair':'materials') + '-fields .seg-btn')
+    .forEach(b=>b.className='seg-btn');
+  btn.classList.add('sel-'+val);
+  if (type==='repair') severity=val; else materialsSeverity=val;
+  updateWait();
+}
+
+// ── CHIPS ──
+function toggleChip(el) {
+  el.classList.toggle('selected');
+}
+function getSelectedChips() {
+  return [...document.querySelectorAll('.mat-chip.selected')].map(c=>c.textContent.trim());
+}
+
+// ── SUBMIT ──
+function submitRequest() {
+  const name = document.getElementById('f-name').value.trim();
+  const grade = document.getElementById('f-grade').value;
+  const sub = document.getElementById('f-submitter').value;
+
+  if (!name || !grade || !sub) { alert('Please fill in your name, grade, and who is submitting.'); return; }
+
+  let ticketData = { id: genId(), type: requestType, name, grade, submitter: sub,
+    email: document.getElementById('f-email').value.trim(),
+    status: 'open', submittedAt: ts(), replies: [], location: '' };
+
+  if (requestType==='repair') {
+    const inst = document.getElementById('f-instrument').value;
+    const desc = document.getElementById('f-desc').value.trim();
+    if (!inst || !severity || !desc) { alert('Please select an instrument, severity, and describe the problem.'); return; }
+    Object.assign(ticketData, { instrument: inst, ownership: document.getElementById('f-ownership').value,
+      locker: document.getElementById('f-locker').value.trim(), severity, desc });
+  } else {
+    const chips = getSelectedChips();
+    const extraDesc = document.getElementById('f-mat-desc').value.trim();
+    if (chips.length===0 && !extraDesc) { alert('Please select at least one material or describe what you need.'); return; }
+    if (!materialsSeverity) materialsSeverity = 'medium';
+    Object.assign(ticketData, { items: chips, severity: materialsSeverity,
+      desc: [chips.join(', '), extraDesc].filter(Boolean).join(' — ') });
+  }
+
+  tickets.unshift(ticketData);
+  save();
+
+  document.getElementById('confirm-id').textContent = '#'+ticketData.id;
+  const typeLabel = requestType==='repair' ? `repair request for your ${ticketData.instrument||'instrument'}` : 'materials request';
+  document.getElementById('confirm-msg').textContent =
+    `Your ${typeLabel} has been logged as ticket #${ticketData.id}. Mr. Dzielinski will review it and follow up when it's ready or if anything changes.`;
+  document.getElementById('main-form').style.display = 'none';
+  document.getElementById('wait-banner').style.display = 'none';
+  document.getElementById('success-card').style.display = 'block';
+}
+
+function resetForm() {
+  ['f-name','f-grade','f-submitter','f-email','f-instrument','f-ownership','f-locker','f-desc','f-mat-desc']
+    .forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  document.querySelectorAll('.seg-btn').forEach(b=>b.className='seg-btn');
+  document.querySelectorAll('.mat-chip').forEach(c=>c.classList.remove('selected'));
+  severity=''; materialsSeverity='';
+  setType('repair');
+  document.getElementById('main-form').style.display='block';
+  document.getElementById('wait-banner').style.display='flex';
+  document.getElementById('success-card').style.display='none';
+  updateWait();
+}
+
+// ── DASHBOARD ──
+function renderDash() {
+  document.getElementById('k-open').textContent = tickets.filter(t=>t.status==='open').length;
+  document.getElementById('k-wip').textContent = tickets.filter(t=>t.status==='in-progress').length;
+  document.getElementById('k-done').textContent = tickets.filter(t=>t.status==='done').length;
+  document.getElementById('k-sent').textContent = tickets.filter(t=>t.status==='sent-out').length;
+
+  let list = tickets;
+  if (activeFilter!=='all') list = list.filter(t=>t.status===activeFilter);
+  if (activeTypeFilter!=='all') list = list.filter(t=>t.type===activeTypeFilter);
+
+  const el = document.getElementById('ticket-list');
+  if (!list.length) {
+    el.innerHTML = `<div class="empty"><span class="empty-icon">🎺</span><p>No requests found. Enjoy the quiet!</p></div>`;
+    return;
+  }
+  el.innerHTML = list.map(t => {
+    const isMat = t.type==='materials';
+    const sevBadge = t.severity ? `<span class="badge badge-${t.severity}">${t.severity}</span>` : '';
+    const locTag = t.location ? `<span style="font-size:11px;color:var(--text-secondary)">${t.location==='locker'?'📪 In locker':'🔧 Repair zone'}</span>` : '';
+    return `<div class="ticket-row s-${t.status}" onclick="openModal('${t.id}')">
+      <div class="tr-top">
+        <div>
+          <div class="tr-name">${t.name} <span style="font-size:12px;font-weight:400;color:var(--text-secondary)">(${t.grade} · ${t.submitter==='parent'?'Parent':'Student'})</span></div>
+        </div>
+        <div class="tr-meta">
+          <span class="badge ${isMat?'badge-materials':'badge-repair'}">${isMat?'📦 Materials':'🔧 Repair'}</span>
+          ${sevBadge}
+          <span class="badge badge-${t.status}">${statusLabel(t.status)}</span>
+          <span class="badge badge-id">#${t.id}</span>
+        </div>
+      </div>
+      ${!isMat ? `<div class="tr-instrument">${t.instrument||''}${t.ownership==='school'?' <span style="font-weight:400;font-size:11px">(school-owned)</span>':''}</div>` : ''}
+      <div class="tr-desc">${(t.desc||'').length>130?(t.desc||'').slice(0,127)+'…':t.desc||''}</div>
+      <div class="tr-footer">
+        <div class="tr-date">Submitted ${t.submittedAt}${t.email?' · '+t.email:''}</div>
+        ${locTag}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function statusLabel(s) {
+  return {'open':'Open','in-progress':'In Progress','done':'Done','sent-out':'Sent Out'}[s]||s;
+}
+
+function setFilter(f,el) {
+  activeFilter=f;
+  document.querySelectorAll('.filter-row .filter-btn').forEach(b=>{if(!b.id)b.classList.remove('active')});
+  el.classList.add('active');
+  renderDash();
+}
+function setTypeFilter(f,el) {
+  activeTypeFilter=f;
+  ['tf-all','tf-repair','tf-materials'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  el.classList.add('active');
+  renderDash();
+}
+
+// ── MODAL ──
+function openModal(id) {
+  const t = tickets.find(x=>x.id===id);
+  editId = id; modalStatus = t.status; activeLoc = t.location||'';
+
+  document.getElementById('modal-title').textContent = `#${t.id} — ${t.name}`;
+
+  const isMat = t.type==='materials';
+  document.getElementById('modal-info').innerHTML = `
+    <div class="mig-item"><label>Name</label><span>${t.name}</span></div>
+    <div class="mig-item"><label>Grade</label><span>${t.grade}</span></div>
+    <div class="mig-item"><label>Submitted As</label><span>${t.submitter==='parent'?'Parent / Guardian':'Student'}</span></div>
+    <div class="mig-item"><label>Type</label><span>${isMat?'📦 Materials Request':'🔧 Instrument Repair'}</span></div>
+    ${!isMat?`<div class="mig-item"><label>Instrument</label><span style="color:var(--gold);font-weight:600">${t.instrument||'—'}</span></div>`:''}
+    ${!isMat&&t.ownership?`<div class="mig-item"><label>Ownership</label><span>${t.ownership==='school'?'School-owned':'Personal'}</span></div>`:''}
+    ${!isMat&&t.locker?`<div class="mig-item"><label>Location</label><span>${t.locker}</span></div>`:''}
+    <div class="mig-item"><label>Severity / Priority</label><span class="badge badge-${t.severity}">${t.severity||'—'}</span></div>
+    ${t.email?`<div class="mig-item"><label>Email</label><span>${t.email}</span></div>`:''}
+    <div class="mig-item"><label>Submitted</label><span>${t.submittedAt}</span></div>
+  `;
+
+  document.getElementById('modal-desc').textContent = t.desc || '(no description)';
+
+  const statuses = [
+    {k:'open',icon:'🟠',lbl:'Open'},
+    {k:'in-progress',icon:'🔵',lbl:'In Progress'},
+    {k:'done',icon:'🟢',lbl:'Done'},
+    {k:'sent-out',icon:'📦',lbl:'Sent Out'},
+  ];
+  document.getElementById('modal-status-grid').innerHTML = statuses.map(s=>`
+    <button class="status-opt ${t.status===s.k?'sel-'+s.k:''}" onclick="setModalStatus('${s.k}',this)">
+      <span class="s-icon">${s.icon}</span>${s.lbl}
+    </button>`).join('');
+
+  updateLocSection();
+
+  const locBtns = document.querySelectorAll('.loc-btn');
+  locBtns.forEach(b=>b.classList.remove('selected'));
+  if (t.location==='locker') locBtns[0].classList.add('selected');
+  if (t.location==='repair-zone') locBtns[1].classList.add('selected');
+
+  // reply history
+  const hw = document.getElementById('reply-hist-wrap');
+  hw.innerHTML = (t.replies&&t.replies.length) ? `
+    <div class="section-header">Reply History (${t.replies.length})</div>
+    <div class="reply-history">${t.replies.map(r=>`
+      <div class="reply-item">${r.text}<div class="reply-meta">${r.date}</div></div>`).join('')}
+    </div>` : '';
+
+  // quick replies
+  const qrs = isMat ? [
+    {k:'working', l:'✅ On it'},
+    {k:'mat-ready', l:'📦 Ready to pick up'},
+    {k:'mat-ordered', l:'📬 Ordered'},
+    {k:'mat-unavailable', l:'❌ Unavailable'},
+  ] : [
+    {k:'working', l:'✅ Working on it'},
+    {k:'done-locker', l:'📪 Done — locker'},
+    {k:'done-zone', l:'🔧 Done — repair zone'},
+    {k:'sent-out', l:'📦 Sent to shop'},
+    {k:'needs-parts', l:'⏳ Waiting on parts'},
+  ];
+  document.getElementById('quick-replies').innerHTML = qrs.map(q=>`<button class="qr" onclick="useQR('${q.k}')">${q.l}</button>`).join('');
+
+  document.getElementById('reply-text').value='';
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+const QR_REPAIR = {
+  working: 'I've started working on your {{inst}}. I'll follow up as soon as it's done!',
+  'done-locker': 'Great news — your {{inst}} has been repaired and is back in your locker! Give it a try.',
+  'done-zone': 'Your {{inst}} is repaired and ready in the Repair/Repaired Zone in Room 157. Come grab it!',
+  'sent-out': 'Your {{inst}} needs more work than I can do in-house, so I've sent it to a repair shop. I'll update you with an estimated return date.',
+  'needs-parts': 'I've assessed your {{inst}} and I'm waiting on a part. I'll update you as soon as it arrives!'
+};
+const QR_MAT = {
+  working: 'I've received your materials request and I'm looking into it. I'll follow up soon!',
+  'mat-ready': 'Your requested materials are ready to pick up from Room 157. See me before or after class!',
+  'mat-ordered': 'I've placed an order for your requested materials. They should arrive within a few days.',
+  'mat-unavailable': 'Unfortunately I'm not able to fulfill this request right now. Please see me in class to discuss alternatives.'
+};
+
+function useQR(key) {
+  const t = tickets.find(x=>x.id===editId);
+  const isMat = t&&t.type==='materials';
+  const tmpl = isMat ? QR_MAT[key] : QR_REPAIR[key];
+  if (!tmpl) return;
+  document.getElementById('reply-text').value = tmpl.replace('{{inst}}', t?t.instrument||'instrument':'instrument');
+}
+
+function setModalStatus(s, btn) {
+  modalStatus = s;
+  document.querySelectorAll('.status-opt').forEach(b=>b.className='status-opt');
+  btn.classList.add('sel-'+s);
+  updateLocSection();
+}
+
+function updateLocSection() {
+  document.getElementById('loc-section').style.display = modalStatus==='done' ? 'block' : 'none';
+}
+
+function setLoc(loc) {
+  activeLoc = loc;
+  document.querySelectorAll('.loc-btn').forEach(b=>b.classList.remove('selected'));
+  event.target.classList.add('selected');
+}
+
+function saveTicket() {
+  const idx = tickets.findIndex(x=>x.id===editId);
+  if (idx===-1) return;
+  const reply = document.getElementById('reply-text').value.trim();
+  tickets[idx].status = modalStatus;
+  if (activeLoc) tickets[idx].location = activeLoc;
+  if (reply) {
+    tickets[idx].replies = tickets[idx].replies||[];
+    tickets[idx].replies.push({text:reply, date:ts()});
+  }
+  save();
+  closeModal();
+  renderDash();
+}
+
+function maybeClose(e) { if (e.target===document.getElementById('modal-overlay')) closeModal(); }
+function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); editId=null; }
+</script>
+</body>
+</html>

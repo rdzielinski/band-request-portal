@@ -1,34 +1,22 @@
-# 🎺 Waterloo Band — Request Portal
+# Band Request Portal
 
-A lightweight, self-contained request portal for the Waterloo School District band program. Students and parents can submit instrument repair requests and materials requests, and the director can manage them through a built-in dashboard.
+A one-file web portal for a school band program: students and parents submit instrument repair and supply requests, and the director tracks them from a built-in dashboard. Built for the Waterloo (WI) band program.
 
-## Features
+## What it does
 
-- **Instrument Repair Requests** — Students/parents describe the issue, select severity, and specify instrument details including ownership (personal vs. school-owned)
-- **Materials Requests** — Quick chip-select for common items (reeds, valve oil, sticks, etc.) with an option to add custom items
-- **Director Dashboard** — Filter by status (Open, In Progress, Done, Sent Out) and type, with KPI cards at a glance
-- **Ticket Detail Modal** — Update status, set pickup location, send quick-reply messages, and track reply history
-- **Wait-Time Estimate** — Dynamic banner showing estimated turnaround based on open ticket count
-- **100% Client-Side** — All data stored in `localStorage`. No server, no database, no accounts required.
-
-## Usage
-
-This is a single HTML file with no dependencies. You can:
-
-1. **Open it directly** — Double-click `index.html` in any modern browser
-2. **Host via GitHub Pages** — Enable Pages on this repo (Settings → Pages → Source: main branch) and it's live
-3. **Embed in an LMS** — Drop the file into Google Sites, Schoology, or any platform that accepts HTML
+- Repair requests with severity, instrument details, and school-owned vs. personal
+- Supply requests with quick picks for reeds, valve oil, sticks and more
+- Director dashboard with status filters, at-a-glance counts, a ticket view, quick replies, and pickup location
+- Estimated turnaround based on how many tickets are open
 
 ## Tech
 
-- Vanilla HTML / CSS / JavaScript
-- No frameworks, no build step
-- Data persists in the browser's `localStorage` (per-device)
+- Vanilla HTML, CSS and JavaScript in a single file, no build step
+- Data saved in the browser's localStorage, so no server or accounts
+- Runs from GitHub Pages or embedded in Google Sites or an LMS
 
-## Screenshot
+## Use it
 
-> _Maroon & Gold Waterloo Warriors theme_
+Open `index.html` in a browser, or turn on GitHub Pages for this repo.
 
-## License
-
-MIT
+MIT License
